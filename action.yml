@@ -1,0 +1,35 @@
+name: "gbraad's Dotfiles `devbox` Action"
+description: 'Wrapper for devbox command execution on GitHub runners'
+author: "Gerard Braad <me@gbraad.nl>"
+inputs:
+  prefix:
+    description: 'The container image to use'
+    required: true
+    default: ''
+  command:
+    description: 'Command to execute (create, shell, exec)'
+    required: true
+    default: 'create'
+  args:
+    description: 'Additional arguments for the command'
+    required: false
+    default: ''
+outputs:
+  prefix:
+    description: 'The prefix (container image) that was used'
+    value: ${{ inputs.prefix }}
+runs:
+  using: 'composite'
+  steps:
+    - name: Execute devbox command
+      uses: gbraad-actions/zsh-action@main
+      with:
+        run: |
+          # Check if devbox function exists
+          if ! type devbox >/dev/null 2>&1; then
+            echo "Error: devbox function is not defined. Please make sure to run install first"
+            exit 1
+          fi
+          
+          # Execute devbox command
+          devbox ${{ inputs.prefix }} ${{ inputs.command }} ${{ inputs.args }}
